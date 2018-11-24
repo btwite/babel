@@ -511,6 +511,23 @@ export default class ExpressionParser extends LValParser {
         return this.finishNode(node, "OptionalMemberExpression");
       }
       return this.finishNode(node, "MemberExpression");
+    } else if (this.eat(tt.bind)) {
+      // yagajs - Bind operator '->'
+      const node = this.startNodeAt(startPos, startLoc);
+      node.object = base;
+      node.property = this.parseMaybePrivateName();
+      node.computed = false;
+      node._yagaBindExpression = true;
+      return this.finishNode(node, "MemberExpression");
+    } else if (this.eat(tt.bindValue)) {
+      // yagajs - Bind operator '->[...]'
+      const node = this.startNodeAt(startPos, startLoc);
+      node.object = base;
+      node.property = this.parseExpression();
+      node.computed = true;
+      this.expect(tt.bracketR);
+      node._yagaBindExpression = true;
+      return this.finishNode(node, "MemberExpression");
     } else if (this.eat(tt.bracketL)) {
       const node = this.startNodeAt(startPos, startLoc);
       node.object = base;

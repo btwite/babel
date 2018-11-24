@@ -96,6 +96,8 @@ export const types: { [name: string]: TokenType } = {
   colon: new TokenType(":", { beforeExpr }),
   doubleColon: new TokenType("::", { beforeExpr }),
   dot: new TokenType("."),
+  bind: new TokenType("->"), // yagajs - Bind operator '->'
+  bindValue: new TokenType("->["), // yagajs - Bind operator '->[...]'
   question: new TokenType("?", { beforeExpr }),
   questionDot: new TokenType("?."),
   arrow: new TokenType("=>", { beforeExpr }),

@@ -528,6 +528,33 @@ export default class Tokenizer extends LocationParser {
 
     if (next === charCodes.equalsTo) {
       this.finishOp(tt.assign, 2);
+    } else if (
+      code === charCodes.dash &&
+      (next === charCodes.greaterThan ||
+        (next === charCodes.space &&
+          this.input.charCodeAt(this.state.pos + 2) === charCodes.greaterThan))
+    ) {
+      // yagajs - Added a hack to handle formating issues in VS Code. Allow
+      //          operator characters to be separated by a single 'charCodes.space'.
+      let pos = this.state.pos + 1;
+      if (this.input.charCodeAt(pos) === charCodes.space) {
+        pos++;
+      }
+      pos++; // Skip the '>' character.
+      const ch = this.input.charCodeAt(pos);
+      if (
+        ch === charCodes.leftSquareBracket ||
+        (ch === charCodes.space &&
+          this.input.charCodeAt(pos + 1) === charCodes.leftSquareBracket)
+      ) {
+        // yagajs - Bind operator '->['
+        this.state.pos = pos + (ch === charCodes.space ? 2 : 1);
+        this.finishToken(tt.bindValue);
+      } else {
+        // yagajs - Bind operator '->'
+        this.state.pos = pos;
+        this.finishToken(tt.bind);
+      }
     } else {
       this.finishOp(tt.plusMin, 1);
     }

@@ -1,0 +1,19 @@
+Module: D:\repos\babel\packages\babel-parser\src\tokenizer\types.js
+
+1. Line 99 - New bind operator '->'. Defined like dot
+2. Line 100 - New bind operator '->[' as lead in for '->[...]'. Defined like dot.
+
+Module: D:\repos\babel\packages\babel-parser\src\parser\expression.js
+
+1. Function parseSubscript Line 514-529.
+   Output AST node for MemberExpression. In the case of '->[' (BindValue) property is set to
+   a following parsed expression with a ']' expected at the end.
+   'foo->bar' has a property _yagaBindExpression = true
+   'foo->['bar'] has above and _yagaBindValueExpression = true
+   
+Module: D:\repos\babel\packages\babel-parser\src\tokenizer\index.js
+
+1. Function readToken_plus_min Line 531-557
+   Complete tokens for '->' (bind) and '->[' (bindValue) after manual check for following token characters.
+   Note that VS Code and Beautify reformat the code and can insert spaces between operator characters due
+   to unsupported syntax. Hack introduced to check for this.
