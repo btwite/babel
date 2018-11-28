@@ -13,7 +13,7 @@ Module: D:\repos\babel\packages\babel-parser\src\parser\expression.js
    
 Module: D:\repos\babel\packages\babel-parser\src\tokenizer\index.js
 
-1. Function readToken_plus_min Line 531-557
+1. Function readToken_plus_min Line 531-561
    Complete tokens for '->' (bind) and '->[' (bindValue) after manual check for following token characters.
    Note that VS Code and Beautify reformat the code and can insert spaces between operator characters due
    to unsupported syntax. Hack introduced to check for this.

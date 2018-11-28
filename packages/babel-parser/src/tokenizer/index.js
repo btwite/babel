@@ -540,21 +540,24 @@ export default class Tokenizer extends LocationParser {
       if (this.input.charCodeAt(pos) === charCodes.space) {
         pos++;
       }
+      // yagajs - Assume Bind operator '->'
       pos++; // Skip the '>' character.
+      let typ = tt.bind;
       const ch = this.input.charCodeAt(pos);
-      if (
-        ch === charCodes.leftSquareBracket ||
-        (ch === charCodes.space &&
-          this.input.charCodeAt(pos + 1) === charCodes.leftSquareBracket)
-      ) {
+      if (ch === charCodes.leftSquareBracket) {
         // yagajs - Bind operator '->['
-        this.state.pos = pos + (ch === charCodes.space ? 2 : 1);
-        this.finishToken(tt.bindValue);
-      } else {
-        // yagajs - Bind operator '->'
-        this.state.pos = pos;
-        this.finishToken(tt.bind);
+        pos += 1;
+        typ = tt.bindValue;
+      } else if (
+        ch === charCodes.space &&
+        this.input.charCodeAt(pos + 1) === charCodes.leftSquareBracket
+      ) {
+        // yagajs - Bind operator '-> ['
+        pos += 2;
+        typ = tt.bindValue;
       }
+      this.state.pos = pos;
+      this.finishToken(typ);
     } else {
       this.finishOp(tt.plusMin, 1);
     }
