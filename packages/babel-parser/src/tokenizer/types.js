@@ -98,6 +98,7 @@ export const types: { [name: string]: TokenType } = {
   dot: new TokenType("."),
   bind: new TokenType("->"), // yagajs - Bind operator '->'
   bindValue: new TokenType("->["), // yagajs - Bind operator '->[...]'
+  privateExpr: new TokenType("#["), // yagajs - Private property expr '#[...]'
   question: new TokenType("?", { beforeExpr }),
   questionDot: new TokenType("?."),
   arrow: new TokenType("=>", { beforeExpr }),

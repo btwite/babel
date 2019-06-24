@@ -956,7 +956,9 @@ export default class StatementParser extends ExpressionParser {
     // class bodies are implicitly strict
     const oldStrict = this.state.strict;
     this.state.strict = true;
-    this.state.classLevel++;
+    // yagajs - Set the class level to the next allow hash level
+    const oldClassLevel = this.state.classLevel;
+    this.state.classLevel = ++this.state._yagaAllowHash;
 
     const state = { hadConstructor: false };
     let decorators: N.Decorator[] = [];
@@ -1014,7 +1016,9 @@ export default class StatementParser extends ExpressionParser {
 
     node.body = this.finishNode(classBody, "ClassBody");
 
-    this.state.classLevel--;
+    // yagajs - Restore the class level and reduce allow hash level
+    this.state.classLevel = oldClassLevel;
+    this.state._yagaAllowHash--;
     this.state.strict = oldStrict;
   }
 

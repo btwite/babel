@@ -34,6 +34,7 @@ export default class State {
     this.isIterator = false;
 
     this.classLevel = 0;
+    this._yagaAllowHash = 0; // yagajs - Init Yaga hash char management property
 
     this.labels = [];
 

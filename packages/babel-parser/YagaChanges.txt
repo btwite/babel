@@ -2,18 +2,56 @@ Module: D:\repos\babel\packages\babel-parser\src\tokenizer\types.js
 
 1. Line 99 - New bind operator '->'. Defined like dot
 2. Line 100 - New bind operator '->[' as lead in for '->[...]'. Defined like dot.
+3. Line 101 - New private member operator '#[' as lead in for '#[...]'. Defined like dot.
 
 Module: D:\repos\babel\packages\babel-parser\src\parser\expression.js
 
-1. Function parseSubscript Line 514-529.
+1. Function parseSubscript Line 504-543.
    Output AST node for MemberExpression. In the case of '->[' (BindValue) property is set to
    a following parsed expression with a ']' expected at the end.
    'foo->bar' has a property _yagaBindExpression = true
    'foo->['bar'] has above and _yagaBindValueExpression = true
-   
+   Added '#[...]' for private property expression syntax.
+   Increment/decrement _yagaAllowHash value for standard dot operator.
+
+2. Function parseMaybePrivateName Line 973-989
+   Extracted code to form common checkPrivatePrefix to selectively allow '#' operator
+   Determine class active by classLevel === _yagaAllowHash
+   Object private named members recorded as PrivateName type.
+
+3. Function parseObj
+   Increment/decrement _yagaAllowHash value to allow hash operator in object literals
+
+4. Function parsePropertyName
+   All property nodes have _yagaPrivateProperty set if hash prefix.
+
+5. Function parseMaybePrivateName
+   Check for private name if not already passed as a parameter
+
+6. Function checkPrivatePrefix
+   New common function to detect private class or object member hash operator
+
 Module: D:\repos\babel\packages\babel-parser\src\tokenizer\index.js
 
 1. Function readToken_plus_min Line 531-561
    Complete tokens for '->' (bind) and '->[' (bindValue) after manual check for following token characters.
    Note that VS Code and Beautify reformat the code and can insert spaces between operator characters due
    to unsupported syntax. Hack introduced to check for this.
+
+2. Function getTokenFromCode
+   Detect '#[' operator sequence.
+   Change scope of hash operator management to use _yagaAllowHash instead of just classLevel
+
+
+Module D:\repos\babel\packages\babel-parser\src\parser\statement.js
+
+1. Function parseClassBody
+   Save and restore previous classLevel
+   Set new class level to the next increment of _yagaAllowHash
+   Increment and decrement _yagaAllowHash
+
+
+Module D:\repos\babel\packages\babel-parser\src\tokenizer\state.js
+
+1. Function init
+   Initialise _yagaAllowHash to zero in the parser's state object

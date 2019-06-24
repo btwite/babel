@@ -657,10 +657,21 @@ export default class Tokenizer extends LocationParser {
           return;
         }
 
+        // yagajs - Check for yaga #[...] extension
+        if (this.input.charCodeAt(this.state.pos + 1) === charCodes.leftSquareBracket) {
+          this.state.pos += 2;
+          this.finishToken(tt.privateExpr);
+          return;
+        }
+
+        // yagajs - Extend scope of hash char
         if (
-          (this.hasPlugin("classPrivateProperties") ||
-            this.hasPlugin("classPrivateMethods")) &&
-          this.state.classLevel > 0
+          this.state._yagaAllowHash &&
+          (
+            this.state.classLevel === 0 ||
+            this.hasPlugin("classPrivateProperties") ||
+            this.hasPlugin("classPrivateMethods")
+          )
         ) {
           ++this.state.pos;
           this.finishToken(tt.hash);
