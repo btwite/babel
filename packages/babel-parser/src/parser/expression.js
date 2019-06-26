@@ -1019,7 +1019,9 @@ export default class ExpressionParser extends LValParser {
   // yagajs - Common function for detecting possible private member for a
   //          class or object. Spaces not permitted after the operator.
   checkPrivatePrefix(): boolean {
-    if (!this.match(tt.hash)) {
+    if (this.match(tt.privateExpr)) {
+        return true;
+    } else if (!this.match(tt.hash)) {
       return false;
     }
     const columnHashEnd = this.state.end;
@@ -1702,7 +1704,7 @@ export default class ExpressionParser extends LValParser {
     if (isPrivate)
       prop._yagaPrivateProperty = true; // yagajs - Yaga Object literal 'private' property
 
-    if (this.eat(tt.bracketL)) {
+    if (this.eat(tt.bracketL) || this.eat(tt.privateExpr)) {
       (prop: $FlowSubtype < N.ObjectOrClassMember > ).computed = true;
       prop.key = this.parseMaybeAssign();
       this.expect(tt.bracketR);

@@ -658,17 +658,24 @@ export default class Tokenizer extends LocationParser {
         }
 
         // yagajs - Check for yaga #[...] or #[] extension
-        if (this.input.charCodeAt(this.state.pos + 1) === charCodes.leftSquareBracket) {
-            if (this.input.charCodeAt(this.state.pos + 2) === charCodes.rightSquareBracket) {
-              this.state.pos += 3;
-              this.finishToken(tt.privateSpace); // #[] operator
-              return;
-            }
+        //          Allow for '# [' in an object literal
+        let ch = this.input.charCodeAt(this.state.pos + 1);
+        if (ch === charCodes.leftSquareBracket) {
+          if (this.input.charCodeAt(this.state.pos + 2) === charCodes.rightSquareBracket) {
+            this.state.pos += 3;
+            this.finishToken(tt.privateSpace); // #[] operator
+            return;
+          }
           this.state.pos += 2;
           this.finishToken(tt.privateExpr); // #[ operator for #[...]
           return;
+        } else if (ch === charCodes.space && 
+                   this.input.charCodeAt(this.state.pos + 2) === charCodes.leftSquareBracket) {
+          this.state.pos += 3;
+          this.finishToken(tt.privateExpr); // '# [' operator for #[...]
+          return;
         }
-
+        
         // yagajs - Extend scope of hash char
         if (
           this.state._yagaAllowHash &&
