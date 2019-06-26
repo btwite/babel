@@ -3,6 +3,7 @@ Module: D:\repos\babel\packages\babel-parser\src\tokenizer\types.js
 1. Line 99 - New bind operator '->'. Defined like dot
 2. Line 100 - New bind operator '->[' as lead in for '->[...]'. Defined like dot.
 3. Line 101 - New private member operator '#[' as lead in for '#[...]'. Defined like dot.
+4. Line 102 - New special operator '#[]' to answer an objects local private space.
 
 Module: D:\repos\babel\packages\babel-parser\src\parser\expression.js
 
@@ -13,6 +14,9 @@ Module: D:\repos\babel\packages\babel-parser\src\parser\expression.js
    'foo->['bar'] has above and _yagaBindValueExpression = true
    Added '#[...]' for private property expression syntax.
    Increment/decrement _yagaAllowHash value for standard dot operator.
+   Merge '#[]' with '#[...]' syntax code for returning private space only.
+     The node.property field will not exist. !! Don't check for undefined.
+     Also set node._yagaPrivateSpaceOnly to true.
 
 2. Function parseMaybePrivateName Line 973-989
    Extracted code to form common checkPrivatePrefix to selectively allow '#' operator
@@ -21,6 +25,7 @@ Module: D:\repos\babel\packages\babel-parser\src\parser\expression.js
 
 3. Function parseObj
    Increment/decrement _yagaAllowHash value to allow hash operator in object literals
+   Set _yagaHasPrivateProperties in object literal node if there are private members
 
 4. Function parsePropertyName
    All property nodes have _yagaPrivateProperty set if hash prefix.
@@ -41,6 +46,7 @@ Module: D:\repos\babel\packages\babel-parser\src\tokenizer\index.js
 2. Function getTokenFromCode
    Detect '#[' operator sequence.
    Change scope of hash operator management to use _yagaAllowHash instead of just classLevel
+   Also detect '#[]' operator sequence for answering private space object only.
 
 
 Module D:\repos\babel\packages\babel-parser\src\parser\statement.js

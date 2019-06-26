@@ -546,14 +546,21 @@ export default class ExpressionParser extends LValParser {
       this.expect(tt.bracketR);
       node._yagaBindExpression = true;
       return this.finishNode(node, "MemberExpression");
-    } else if (this.eat(tt.privateExpr)) {
+    } else if (this.match(tt.privateExpr) || this.match(tt.privateSpace)) {
       // yagajs - Private property expression '#[...]'
+      const flPrivateSpaceOnly = this.match(tt.privateSpace);
+      this.next();
       const node = this.startNodeAt(startPos, startLoc);
       node.object = base;
-      node.property = this.parseExpression();
+      if (flPrivateSpaceOnly) {
+        delete node.property; // Indicates that we want the space only
+        node._yagaPrivateSpaceOnly = true;
+      } else {
+        node.property = this.parseExpression();
+        node.computed = true;
+        this.expect(tt.bracketR);
+      }
       node._yagaPrivateProperty = true;
-      node.computed = true;
-      this.expect(tt.bracketR);
       return this.finishNode(node, "MemberExpression");
     } else if (this.eat(tt.bracketL)) {
       const node = this.startNodeAt(startPos, startLoc);
@@ -1505,6 +1512,11 @@ export default class ExpressionParser extends LValParser {
 
       if (prop.shorthand) {
         this.addExtra(prop, "shorthand", true);
+      }
+
+      // yagajs - Mark the Object node if we have a private member
+      if (prop._yagaPrivateProperty) {
+        node._yagaHasPrivateProperties = true;
       }
 
       node.properties.push(prop);

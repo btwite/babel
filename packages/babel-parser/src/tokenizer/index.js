@@ -657,10 +657,15 @@ export default class Tokenizer extends LocationParser {
           return;
         }
 
-        // yagajs - Check for yaga #[...] extension
+        // yagajs - Check for yaga #[...] or #[] extension
         if (this.input.charCodeAt(this.state.pos + 1) === charCodes.leftSquareBracket) {
+            if (this.input.charCodeAt(this.state.pos + 2) === charCodes.rightSquareBracket) {
+              this.state.pos += 3;
+              this.finishToken(tt.privateSpace); // #[] operator
+              return;
+            }
           this.state.pos += 2;
-          this.finishToken(tt.privateExpr);
+          this.finishToken(tt.privateExpr); // #[ operator for #[...]
           return;
         }
 
