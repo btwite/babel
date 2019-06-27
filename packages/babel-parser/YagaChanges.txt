@@ -1,9 +1,9 @@
 Module: D:\repos\babel\packages\babel-parser\src\tokenizer\types.js
 
-1. Line 99 - New bind operator '->'. Defined like dot
-2. Line 100 - New bind operator '->[' as lead in for '->[...]'. Defined like dot.
-3. Line 101 - New private member operator '#[' as lead in for '#[...]'. Defined like dot.
-4. Line 102 - New special operator '#[]' to answer an objects local private space.
+1. New bind operator '->'. Defined like dot
+2. New bind operator '->[' as lead in for '->[...]'. Defined like dot.
+3. New private member operator '#[' as lead in for '#[...]'. Defined like dot.
+4. New special operator '#[]' to answer an objects local private space.
 4. New object literal operator '::' for methods/functions that require 'this' as an argument
 
 Module: D:\repos\babel\packages\babel-parser\src\parser\expression.js
@@ -27,6 +27,7 @@ Module: D:\repos\babel\packages\babel-parser\src\parser\expression.js
 3. Function parseObj
    Increment/decrement _yagaAllowHash value to allow hash operator in object literals
    Set _yagaHasPrivateProperties in object literal node if there are private members
+   Set _yagaHasThisArgProperties in object literal node if there are thisArg members
 
 4. Function parsePropertyName
    All property nodes have _yagaPrivateProperty set if hash prefix.

@@ -1020,7 +1020,7 @@ export default class ExpressionParser extends LValParser {
   //          class or object. Spaces not permitted after the operator.
   checkPrivatePrefix(): boolean {
     if (this.match(tt.privateExpr)) {
-        return true;
+      return true;
     } else if (!this.match(tt.hash)) {
       return false;
     }
@@ -1521,6 +1521,11 @@ export default class ExpressionParser extends LValParser {
         node._yagaHasPrivateProperties = true;
       }
 
+      // yagajs - Mark the Object node if we have thisArg members
+      if (prop._yagaThisArgProperty) {
+        node._yagaHasThisArgProperties = true;
+      }
+
       node.properties.push(prop);
     }
 
@@ -1643,7 +1648,7 @@ export default class ExpressionParser extends LValParser {
       return this.parseObjectPropertyValue(prop, isPattern, refShorthandDefaultPos);
     } else if (this.eat(tt.doubleColon)) {
       // yagajs - Value must evaluate to a function that takes 'this' as first argument
-      prop._yagaThisArg = true;
+      prop._yagaThisArgProperty = true;
       return this.parseObjectPropertyValue(prop, isPattern, refShorthandDefaultPos);
     }
 
