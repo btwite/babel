@@ -1621,6 +1621,15 @@ export default class ExpressionParser extends LValParser {
     }
   }
 
+  // yagajs - Common code to handle property value specification
+  parseObjectPropertyValue(prop, isPattern, refShorthandDefaultPos: ? Pos) {
+    prop.value = isPattern ?
+      this.parseMaybeDefault(this.state.start, this.state.startLoc) :
+      this.parseMaybeAssign(false, refShorthandDefaultPos);
+
+    return this.finishNode(prop, "ObjectProperty");
+  }
+
   parseObjectProperty(
     prop: N.ObjectProperty,
     startPos: ? number,
@@ -1631,11 +1640,11 @@ export default class ExpressionParser extends LValParser {
     prop.shorthand = false;
 
     if (this.eat(tt.colon)) {
-      prop.value = isPattern ?
-        this.parseMaybeDefault(this.state.start, this.state.startLoc) :
-        this.parseMaybeAssign(false, refShorthandDefaultPos);
-
-      return this.finishNode(prop, "ObjectProperty");
+      return this.parseObjectPropertyValue(prop, isPattern, refShorthandDefaultPos);
+    } else if (this.eat(tt.doubleColon)) {
+      // yagajs - Value must evaluate to a function that takes 'this' as first argument
+      prop._yagaThisArg = true;
+      return this.parseObjectPropertyValue(prop, isPattern, refShorthandDefaultPos);
     }
 
     if (!prop.computed && prop.key.type === "Identifier") {

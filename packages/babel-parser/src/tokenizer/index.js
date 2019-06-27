@@ -1,17 +1,30 @@
 // @flow
 
-import type { Options } from "../options";
-import type { Position } from "../util/location";
+import type {
+  Options
+} from "../options";
+import type {
+  Position
+} from "../util/location";
 import * as charCodes from "charcodes";
 import {
   isIdentifierStart,
   isIdentifierChar,
   isKeyword,
 } from "../util/identifier";
-import { types as tt, keywords as keywordTypes, type TokenType } from "./types";
-import { type TokContext, types as ct } from "./context";
+import {
+  types as tt,
+  keywords as keywordTypes,
+  type TokenType
+} from "./types";
+import {
+  type TokContext,
+  types as ct
+} from "./context";
 import LocationParser from "../parser/location";
-import { SourceLocation } from "../util/location";
+import {
+  SourceLocation
+} from "../util/location";
 import {
   lineBreak,
   lineBreakG,
@@ -113,7 +126,7 @@ export class Token {
 export default class Tokenizer extends LocationParser {
   // Forward-declarations
   // parser/util.js
-  +unexpected: (pos?: ?number, messageOrType?: string | TokenType) => empty;
+  +unexpected: (pos ? : ? number, messageOrType ? : string | TokenType) => empty;
 
   isLookahead: boolean;
 
@@ -318,35 +331,35 @@ export default class Tokenizer extends LocationParser {
             ++this.state.pos;
           }
 
-        case charCodes.lineFeed:
-        case charCodes.lineSeparator:
-        case charCodes.paragraphSeparator:
-          ++this.state.pos;
-          ++this.state.curLine;
-          this.state.lineStart = this.state.pos;
-          break;
-
-        case charCodes.slash:
-          switch (this.input.charCodeAt(this.state.pos + 1)) {
-            case charCodes.asterisk:
-              this.skipBlockComment();
-              break;
-
-            case charCodes.slash:
-              this.skipLineComment(2);
-              break;
-
-            default:
-              break loop;
-          }
-          break;
-
-        default:
-          if (isWhitespace(ch)) {
+          case charCodes.lineFeed:
+          case charCodes.lineSeparator:
+          case charCodes.paragraphSeparator:
             ++this.state.pos;
-          } else {
-            break loop;
-          }
+            ++this.state.curLine;
+            this.state.lineStart = this.state.pos;
+            break;
+
+          case charCodes.slash:
+            switch (this.input.charCodeAt(this.state.pos + 1)) {
+              case charCodes.asterisk:
+                this.skipBlockComment();
+                break;
+
+              case charCodes.slash:
+                this.skipLineComment(2);
+                break;
+
+              default:
+                break loop;
+            }
+            break;
+
+          default:
+            if (isWhitespace(ch)) {
+              ++this.state.pos;
+            } else {
+              break loop;
+            }
       }
     }
   }
@@ -571,9 +584,9 @@ export default class Tokenizer extends LocationParser {
     if (next === code) {
       size =
         code === charCodes.greaterThan &&
-        this.input.charCodeAt(this.state.pos + 2) === charCodes.greaterThan
-          ? 3
-          : 2;
+        this.input.charCodeAt(this.state.pos + 2) === charCodes.greaterThan ?
+        3 :
+        2;
       if (this.input.charCodeAt(this.state.pos + size) === charCodes.equalsTo) {
         this.finishOp(tt.assign, size + 1);
         return;
@@ -610,9 +623,9 @@ export default class Tokenizer extends LocationParser {
     if (next === charCodes.equalsTo) {
       this.finishOp(
         tt.equality,
-        this.input.charCodeAt(this.state.pos + 2) === charCodes.equalsTo
-          ? 3
-          : 2,
+        this.input.charCodeAt(this.state.pos + 2) === charCodes.equalsTo ?
+        3 :
+        2,
       );
       return;
     }
@@ -695,160 +708,161 @@ export default class Tokenizer extends LocationParser {
           );
         }
 
-      // The interpretation of a dot depends on whether it is followed
-      // by a digit or another two dots.
+        // The interpretation of a dot depends on whether it is followed
+        // by a digit or another two dots.
 
-      case charCodes.dot:
-        this.readToken_dot();
-        return;
+        case charCodes.dot:
+          this.readToken_dot();
+          return;
 
-      // Punctuation tokens.
-      case charCodes.leftParenthesis:
-        ++this.state.pos;
-        this.finishToken(tt.parenL);
-        return;
-      case charCodes.rightParenthesis:
-        ++this.state.pos;
-        this.finishToken(tt.parenR);
-        return;
-      case charCodes.semicolon:
-        ++this.state.pos;
-        this.finishToken(tt.semi);
-        return;
-      case charCodes.comma:
-        ++this.state.pos;
-        this.finishToken(tt.comma);
-        return;
-      case charCodes.leftSquareBracket:
-        ++this.state.pos;
-        this.finishToken(tt.bracketL);
-        return;
-      case charCodes.rightSquareBracket:
-        ++this.state.pos;
-        this.finishToken(tt.bracketR);
-        return;
-
-      case charCodes.leftCurlyBrace:
-        if (
-          this.hasPlugin("flow") &&
-          this.input.charCodeAt(this.state.pos + 1) === charCodes.verticalBar
-        ) {
-          this.finishOp(tt.braceBarL, 2);
-        } else {
+          // Punctuation tokens.
+        case charCodes.leftParenthesis:
           ++this.state.pos;
-          this.finishToken(tt.braceL);
-        }
-        return;
-
-      case charCodes.rightCurlyBrace:
-        ++this.state.pos;
-        this.finishToken(tt.braceR);
-        return;
-
-      case charCodes.colon:
-        if (
-          this.hasPlugin("functionBind") &&
-          this.input.charCodeAt(this.state.pos + 1) === charCodes.colon
-        ) {
-          this.finishOp(tt.doubleColon, 2);
-        } else {
+          this.finishToken(tt.parenL);
+          return;
+        case charCodes.rightParenthesis:
           ++this.state.pos;
-          this.finishToken(tt.colon);
-        }
-        return;
-
-      case charCodes.questionMark:
-        this.readToken_question();
-        return;
-      case charCodes.atSign:
-        ++this.state.pos;
-        this.finishToken(tt.at);
-        return;
-
-      case charCodes.graveAccent:
-        ++this.state.pos;
-        this.finishToken(tt.backQuote);
-        return;
-
-      case charCodes.digit0: {
-        const next = this.input.charCodeAt(this.state.pos + 1);
-        // '0x', '0X' - hex number
-        if (next === charCodes.lowercaseX || next === charCodes.uppercaseX) {
-          this.readRadixNumber(16);
+          this.finishToken(tt.parenR);
           return;
-        }
-        // '0o', '0O' - octal number
-        if (next === charCodes.lowercaseO || next === charCodes.uppercaseO) {
-          this.readRadixNumber(8);
+        case charCodes.semicolon:
+          ++this.state.pos;
+          this.finishToken(tt.semi);
           return;
-        }
-        // '0b', '0B' - binary number
-        if (next === charCodes.lowercaseB || next === charCodes.uppercaseB) {
-          this.readRadixNumber(2);
+        case charCodes.comma:
+          ++this.state.pos;
+          this.finishToken(tt.comma);
           return;
+        case charCodes.leftSquareBracket:
+          ++this.state.pos;
+          this.finishToken(tt.bracketL);
+          return;
+        case charCodes.rightSquareBracket:
+          ++this.state.pos;
+          this.finishToken(tt.bracketR);
+          return;
+
+        case charCodes.leftCurlyBrace:
+          if (
+            this.hasPlugin("flow") &&
+            this.input.charCodeAt(this.state.pos + 1) === charCodes.verticalBar
+          ) {
+            this.finishOp(tt.braceBarL, 2);
+          } else {
+            ++this.state.pos;
+            this.finishToken(tt.braceL);
+          }
+          return;
+
+        case charCodes.rightCurlyBrace:
+          ++this.state.pos;
+          this.finishToken(tt.braceR);
+          return;
+
+        case charCodes.colon:
+          // yagajs - Allow double colons if in private operator ('#') scope
+          if (
+            (this.hasPlugin("functionBind") || this.state._yagaAllowHash) &&
+            this.input.charCodeAt(this.state.pos + 1) === charCodes.colon
+          ) {
+            this.finishOp(tt.doubleColon, 2);
+          } else {
+            ++this.state.pos;
+            this.finishToken(tt.colon);
+          }
+          return;
+
+        case charCodes.questionMark:
+          this.readToken_question();
+          return;
+        case charCodes.atSign:
+          ++this.state.pos;
+          this.finishToken(tt.at);
+          return;
+
+        case charCodes.graveAccent:
+          ++this.state.pos;
+          this.finishToken(tt.backQuote);
+          return;
+
+        case charCodes.digit0: {
+          const next = this.input.charCodeAt(this.state.pos + 1);
+          // '0x', '0X' - hex number
+          if (next === charCodes.lowercaseX || next === charCodes.uppercaseX) {
+            this.readRadixNumber(16);
+            return;
+          }
+          // '0o', '0O' - octal number
+          if (next === charCodes.lowercaseO || next === charCodes.uppercaseO) {
+            this.readRadixNumber(8);
+            return;
+          }
+          // '0b', '0B' - binary number
+          if (next === charCodes.lowercaseB || next === charCodes.uppercaseB) {
+            this.readRadixNumber(2);
+            return;
+          }
         }
-      }
-      // Anything else beginning with a digit is an integer, octal
-      // number, or float.
-      case charCodes.digit1:
-      case charCodes.digit2:
-      case charCodes.digit3:
-      case charCodes.digit4:
-      case charCodes.digit5:
-      case charCodes.digit6:
-      case charCodes.digit7:
-      case charCodes.digit8:
-      case charCodes.digit9:
-        this.readNumber(false);
-        return;
+        // Anything else beginning with a digit is an integer, octal
+        // number, or float.
+        case charCodes.digit1:
+        case charCodes.digit2:
+        case charCodes.digit3:
+        case charCodes.digit4:
+        case charCodes.digit5:
+        case charCodes.digit6:
+        case charCodes.digit7:
+        case charCodes.digit8:
+        case charCodes.digit9:
+          this.readNumber(false);
+          return;
 
-      // Quotes produce strings.
-      case charCodes.quotationMark:
-      case charCodes.apostrophe:
-        this.readString(code);
-        return;
+          // Quotes produce strings.
+        case charCodes.quotationMark:
+        case charCodes.apostrophe:
+          this.readString(code);
+          return;
 
-      // Operators are parsed inline in tiny state machines. '=' (charCodes.equalsTo) is
-      // often referred to. `finishOp` simply skips the amount of
-      // characters it is given as second argument, and returns a token
-      // of the type given by its first argument.
+          // Operators are parsed inline in tiny state machines. '=' (charCodes.equalsTo) is
+          // often referred to. `finishOp` simply skips the amount of
+          // characters it is given as second argument, and returns a token
+          // of the type given by its first argument.
 
-      case charCodes.slash:
-        this.readToken_slash();
-        return;
+        case charCodes.slash:
+          this.readToken_slash();
+          return;
 
-      case charCodes.percentSign:
-      case charCodes.asterisk:
-        this.readToken_mult_modulo(code);
-        return;
+        case charCodes.percentSign:
+        case charCodes.asterisk:
+          this.readToken_mult_modulo(code);
+          return;
 
-      case charCodes.verticalBar:
-      case charCodes.ampersand:
-        this.readToken_pipe_amp(code);
-        return;
+        case charCodes.verticalBar:
+        case charCodes.ampersand:
+          this.readToken_pipe_amp(code);
+          return;
 
-      case charCodes.caret:
-        this.readToken_caret();
-        return;
+        case charCodes.caret:
+          this.readToken_caret();
+          return;
 
-      case charCodes.plusSign:
-      case charCodes.dash:
-        this.readToken_plus_min(code);
-        return;
+        case charCodes.plusSign:
+        case charCodes.dash:
+          this.readToken_plus_min(code);
+          return;
 
-      case charCodes.lessThan:
-      case charCodes.greaterThan:
-        this.readToken_lt_gt(code);
-        return;
+        case charCodes.lessThan:
+        case charCodes.greaterThan:
+          this.readToken_lt_gt(code);
+          return;
 
-      case charCodes.equalsTo:
-      case charCodes.exclamationMark:
-        this.readToken_eq_excl(code);
-        return;
+        case charCodes.equalsTo:
+        case charCodes.exclamationMark:
+          this.readToken_eq_excl(code);
+          return;
 
-      case charCodes.tilde:
-        this.finishOp(tt.tilde, 1);
-        return;
+        case charCodes.tilde:
+          this.finishOp(tt.tilde, 1);
+          return;
     }
 
     this.raise(
@@ -924,20 +938,20 @@ export default class Tokenizer extends LocationParser {
   // were read, the integer value otherwise. When `len` is given, this
   // will return `null` unless the integer has exactly `len` digits.
 
-  readInt(radix: number, len?: number): number | null {
+  readInt(radix: number, len ? : number): number | null {
     const start = this.state.pos;
     const forbiddenSiblings =
-      radix === 16
-        ? forbiddenNumericSeparatorSiblings.hex
-        : forbiddenNumericSeparatorSiblings.decBinOct;
+      radix === 16 ?
+      forbiddenNumericSeparatorSiblings.hex :
+      forbiddenNumericSeparatorSiblings.decBinOct;
     const allowedSiblings =
-      radix === 16
-        ? allowedNumericSeparatorSiblings.hex
-        : radix === 10
-        ? allowedNumericSeparatorSiblings.dec
-        : radix === 8
-        ? allowedNumericSeparatorSiblings.oct
-        : allowedNumericSeparatorSiblings.bin;
+      radix === 16 ?
+      allowedNumericSeparatorSiblings.hex :
+      radix === 10 ?
+      allowedNumericSeparatorSiblings.dec :
+      radix === 8 ?
+      allowedNumericSeparatorSiblings.oct :
+      allowedNumericSeparatorSiblings.bin;
 
     let total = 0;
 
@@ -1165,7 +1179,7 @@ export default class Tokenizer extends LocationParser {
         ch === charCodes.graveAccent ||
         (ch === charCodes.dollarSign &&
           this.input.charCodeAt(this.state.pos + 1) ===
-            charCodes.leftCurlyBrace)
+          charCodes.leftCurlyBrace)
       ) {
         if (this.state.pos === this.state.start && this.match(tt.template)) {
           if (ch === charCodes.dollarSign) {
@@ -1199,12 +1213,12 @@ export default class Tokenizer extends LocationParser {
             if (this.input.charCodeAt(this.state.pos) === charCodes.lineFeed) {
               ++this.state.pos;
             }
-          case charCodes.lineFeed:
-            out += "\n";
-            break;
-          default:
-            out += String.fromCharCode(ch);
-            break;
+            case charCodes.lineFeed:
+              out += "\n";
+              break;
+            default:
+              out += String.fromCharCode(ch);
+              break;
         }
         ++this.state.curLine;
         this.state.lineStart = this.state.pos;
@@ -1246,39 +1260,39 @@ export default class Tokenizer extends LocationParser {
         if (this.input.charCodeAt(this.state.pos) === charCodes.lineFeed) {
           ++this.state.pos;
         }
-      case charCodes.lineFeed:
-        this.state.lineStart = this.state.pos;
-        ++this.state.curLine;
-        return "";
-      default:
-        if (ch >= charCodes.digit0 && ch <= charCodes.digit7) {
-          const codePos = this.state.pos - 1;
-          // $FlowFixMe
-          let octalStr = this.input
-            .substr(this.state.pos - 1, 3)
-            .match(/^[0-7]+/)[0];
-          let octal = parseInt(octalStr, 8);
-          if (octal > 255) {
-            octalStr = octalStr.slice(0, -1);
-            octal = parseInt(octalStr, 8);
-          }
-          if (octal > 0) {
-            if (inTemplate) {
-              this.state.invalidTemplateEscapePosition = codePos;
-              return null;
-            } else if (this.state.strict) {
-              this.raise(codePos, "Octal literal in strict mode");
-            } else if (!this.state.containsOctal) {
-              // These properties are only used to throw an error for an octal which occurs
-              // in a directive which occurs prior to a "use strict" directive.
-              this.state.containsOctal = true;
-              this.state.octalPosition = codePos;
+        case charCodes.lineFeed:
+          this.state.lineStart = this.state.pos;
+          ++this.state.curLine;
+          return "";
+        default:
+          if (ch >= charCodes.digit0 && ch <= charCodes.digit7) {
+            const codePos = this.state.pos - 1;
+            // $FlowFixMe
+            let octalStr = this.input
+              .substr(this.state.pos - 1, 3)
+              .match(/^[0-7]+/)[0];
+            let octal = parseInt(octalStr, 8);
+            if (octal > 255) {
+              octalStr = octalStr.slice(0, -1);
+              octal = parseInt(octalStr, 8);
             }
+            if (octal > 0) {
+              if (inTemplate) {
+                this.state.invalidTemplateEscapePosition = codePos;
+                return null;
+              } else if (this.state.strict) {
+                this.raise(codePos, "Octal literal in strict mode");
+              } else if (!this.state.containsOctal) {
+                // These properties are only used to throw an error for an octal which occurs
+                // in a directive which occurs prior to a "use strict" directive.
+                this.state.containsOctal = true;
+                this.state.octalPosition = codePos;
+              }
+            }
+            this.state.pos += octalStr.length - 1;
+            return String.fromCharCode(octal);
           }
-          this.state.pos += octalStr.length - 1;
-          return String.fromCharCode(octal);
-        }
-        return String.fromCharCode(ch);
+          return String.fromCharCode(ch);
     }
   }
 

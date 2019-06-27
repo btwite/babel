@@ -4,6 +4,7 @@ Module: D:\repos\babel\packages\babel-parser\src\tokenizer\types.js
 2. Line 100 - New bind operator '->[' as lead in for '->[...]'. Defined like dot.
 3. Line 101 - New private member operator '#[' as lead in for '#[...]'. Defined like dot.
 4. Line 102 - New special operator '#[]' to answer an objects local private space.
+4. New object literal operator '::' for methods/functions that require 'this' as an argument
 
 Module: D:\repos\babel\packages\babel-parser\src\parser\expression.js
 
@@ -35,6 +36,13 @@ Module: D:\repos\babel\packages\babel-parser\src\parser\expression.js
 
 6. Function checkPrivatePrefix
    New common function to detect private class or object member hash operator
+
+7. Function parseObjectProperty
+   Allow double colon operator :: to specify a function that requies a 'this' arg.
+
+8. Function parseObjectPropertyValue (New)
+   Common code for colon and double colon object property values
+
 
 Module: D:\repos\babel\packages\babel-parser\src\tokenizer\index.js
 
